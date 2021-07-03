@@ -8,6 +8,10 @@ services:
       - POSTGRES_DB=comments
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=mysecretpassword
+    ports:
+      - "5432:5432"
+    networks:
+      - main
     restart: always
   bot:
     build: . 
@@ -15,5 +19,25 @@ services:
     ports:
         - "8080:8080"
     restart: always
+    networks:
+      - main
     depends_on:
         - database
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+        - ./pgadmin:/root/.pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - main
+    restart: unless-stopped
+
+networks:
+  main:
+    driver: bridge
