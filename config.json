@@ -1,0 +1,4 @@
+{
+    "maxPostsPreload": 10,
+    "dsn": "host=database user=postgres password=mysecretpassword dbname=comments port=5432"
+}

@@ -1,0 +1,19 @@
+version: '3.5'
+services:
+  database:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=comments
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mysecretpassword
+    restart: always
+  bot:
+    build: . 
+    command: ./redditbot
+    ports:
+        - "8080:8080"
+    restart: always
+    depends_on:
+        - database
