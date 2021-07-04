@@ -21,3 +21,8 @@ Removes subreddit from observable ones. Change applies only after server reload.
 | Score | Diff between upvotes and downvotes | int32 | |
 | SubredditID | The id of the subreddit in which the thing is located | string | |
 | ParentID | Id of the thing this comment is a reply to, either the link or a comment in it | string | |
+
+### Scrapper Agent
+- UserAgent: Any string
+- ClientId and ClientSecret: Go to https://ssl.reddit.com/prefs/apps/ and create new application (Choose script type). Copy this fields from created application.
+- Username and Password: Your username and password on reddit.
