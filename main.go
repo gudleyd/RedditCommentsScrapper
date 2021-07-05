@@ -34,7 +34,12 @@ func main() {
 	}
 	commentRepo := dbmanager.CommentRepo{Db: db}
 	
-	bot, botErr := reddit.NewBot(reddit.BotConfig{Agent: config.BotUserAgent, App: reddit.App{ID: config.ClientId, Secret: config.ClientSecret, Username: config.RedditUsername, Password: config.RedditPassword}})
+	bot, botErr := reddit.NewBot(
+		reddit.BotConfig{Agent: config.BotUserAgent, 
+			App: reddit.App{ID: config.ClientID, 
+				Secret: config.ClientSecret, 
+				Username: config.RedditUsername, 
+				Password: config.RedditPassword}})
 	if botErr != nil {
 		mylog.Logf(3, "Cannot create bot with %s\n", dbErr)
 		return

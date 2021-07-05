@@ -7,7 +7,7 @@ import (
 type Configuration struct {
 	DatabaseConnectionString string `env:"DATABASE_CONNECTION_STRING"`
 	BotUserAgent string `env:"BOT_USER_AGENT"`
-	ClientId string `env:"CLIENT_ID"`
+	ClientID string `env:"CLIENT_ID"`
 	ClientSecret string `env:"CLIENT_SECRET"`
 	RedditUsername string `env:"REDDIT_USERNAME"`
 	RedditPassword string `env:"REDDIT_PASSWORD"`

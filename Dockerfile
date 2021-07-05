@@ -1,15 +1,10 @@
 FROM golang:1.16.5-stretch AS build
 WORKDIR /build
-COPY config /build/config
-COPY dbmanager /build/dbmanager
-COPY handlers /build/handlers
-COPY logic /build/logic
-COPY models /build/models
-COPY mylog /build/mylog
-COPY observer /build/observer
-COPY main.go /build
-COPY go.mod /build
-COPY go.sum /build
+
+COPY go.mod go.sum .
+RUN go mod download
+
+COPY . .
 RUN go build -o redditbot .
 
 FROM golang:1.16.5-stretch AS run

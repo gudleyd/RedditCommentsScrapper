@@ -31,8 +31,10 @@ func StartObservations(config config.Configuration, bot *reddit.Bot, commentRepo
 	}
 }
 
-func StartSubredditObservation(subredditName string, config config.Configuration, bot *reddit.Bot, commentRepo *dbmanager.CommentRepo) {
-
+func StartSubredditObservation(subredditName string, 
+	config config.Configuration, 
+	bot *reddit.Bot, 
+	commentRepo *dbmanager.CommentRepo) {
 	SubredditCommentsPreload(subredditName, config, commentRepo)
 
 	mylog.Logf(1, "Start observing %s\n", subredditName)
@@ -60,11 +62,11 @@ func SubredditCommentsPreload(subredditName string, config config.Configuration,
 	processed, newOnes, errors := 0, 0, 0
 	for config.MaxPostsPreload > 0 && errors < config.MaxErrors  {
 		posts, _, err = readOnlyClient.Subreddit.NewPosts(context.Background(), subredditName, &redditReadOnly.ListOptions{
-			Limit: int(min(100, config.MaxPostsPreload)),
+			Limit: min(100, config.MaxPostsPreload),
 		})
 		if err != nil {
 			mylog.Logf(2, "Preloading for subreddit %s failed with error %s. Skipping...\n", subredditName, err)
-			errors += 1
+			errors++
 		}
 		for _, post := range posts {
 			if config.MaxPostsPreload <= 0 || errors >= config.MaxErrors {
@@ -75,27 +77,37 @@ func SubredditCommentsPreload(subredditName string, config config.Configuration,
 			postAndComments, _, err = readOnlyClient.Post.Get(context.Background(), post.ID)
 			if postErr != nil {
 				mylog.Logf(2, "Preloading for post %s failed with error %s. Skipping...\n", post.FullID, err)
-				errors += 1
+				errors++
 				continue
 			}
 			_, loadMoreErr := readOnlyClient.Post.LoadMoreComments(context.Background(), postAndComments)
 			if loadMoreErr != nil {
 				mylog.Logf(2, "Preloading for post %s failed with error %s. Skipping...\n", post.FullID, err)
-				errors += 1
+				errors++
 				continue
 			}
 			for _, comment := range postAndComments.Comments {
 				var isNew bool
-				isNew, err = commentRepo.Upsert(models.Comment{FullName: comment.FullID, Id: comment.ID, Author: comment.Author, Body: comment.Body, Score: int32(comment.Score), SubredditID: comment.SubredditID, ParentID: comment.ParentID})
+				isNew, err = commentRepo.Upsert(
+					models.Comment{FullName: comment.FullID, 
+						Id: comment.ID, 
+						Author: comment.Author, 
+						Body: comment.Body, 
+						Score: int32(comment.Score), 
+						SubredditID: comment.SubredditID, 
+						ParentID: comment.ParentID})
 				if err != nil {
-					mylog.Logf(2, "Error occured on comment saving")
+					mylog.Logf(2, "Error occurred on comment saving")
 				} else if isNew {
-					mylog.Logf(0, "Processed new comment on %s with (Id, ParentId) = (%s, %s)\n", subredditName, comment.ID, comment.ParentID)
-					newOnes += 1
+					mylog.Logf(0, "Processed new comment on %s with (Id, ParentId) = (%s, %s)\n", 
+						subredditName, 
+						comment.ID, 
+						comment.ParentID)
+					newOnes++
 				}
-				processed += 1
+				processed++
 			}
-			config.MaxPostsPreload -= 1
+			config.MaxPostsPreload--
 		}
 	}
 	if errors >= config.MaxErrors {
