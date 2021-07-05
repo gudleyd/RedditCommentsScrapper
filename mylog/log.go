@@ -1,4 +1,4 @@
-package main
+package mylog
 
 import (
 	"fmt"
@@ -10,7 +10,5 @@ const (
 )
 
 func Logf(level int, format string, a ...interface{}) {
-	fmt.Print(LogLevelColor[level])
-    fmt.Printf(format, a...)
-	fmt.Print(ColorReset)
+    fmt.Printf(LogLevelColor[level] + format + ColorReset, a...)
 }
